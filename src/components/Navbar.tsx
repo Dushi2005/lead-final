@@ -10,6 +10,7 @@ import {
   Key,
   Layers,
   LayoutDashboard,
+  Menu,
   Plus,
   Radio,
   Search,
@@ -19,6 +20,7 @@ import {
   TestTube2,
   UserCheck,
   Users,
+  X,
 } from 'lucide-react';
 import { User } from '../types/index.ts';
 
@@ -53,8 +55,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   const navItems = [
     { id: 'dashboard', label: 'RevOps Dashboard', icon: LayoutDashboard },
@@ -65,33 +68,48 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'env', label: 'Env Variables', icon: Key },
   ];
 
+  const handleNavClick = (tabId: string) => {
+    onSelectTab(tabId);
+    setShowMobileMenu(false);
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 text-white select-none">
-      <div className="max-w-[100vw] mx-auto px-4 sm:px-6 lg:px-8 overflow-x-auto">
-        <div className="flex items-center justify-between h-16 min-w-max">
-          {/* Logo & Brand */}
-          <div className="flex items-center space-x-6">
-            <div
-              className="flex items-center space-x-3 cursor-pointer group"
-              onClick={() => onSelectTab('dashboard')}
+      <div className="max-w-[100vw] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 md:h-16">
+          {/* Left: Hamburger + Logo */}
+          <div className="flex items-center space-x-3 md:space-x-6">
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="md:hidden p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              aria-label="Toggle menu"
             >
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-indigo-600 via-blue-600 to-cyan-400 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-                <Sparkles className="w-5 h-5 text-white" />
+              {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+
+            {/* Logo & Brand */}
+            <div
+              className="flex items-center space-x-2 sm:space-x-3 cursor-pointer group"
+              onClick={() => handleNavClick('dashboard')}
+            >
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-gradient-to-tr from-indigo-600 via-blue-600 to-cyan-400 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
               <div>
-                <div className="flex items-center space-x-2">
-                  <span className="font-bold text-lg tracking-tight text-slate-100 font-display">
+                <div className="flex items-center space-x-1.5">
+                  <span className="font-bold text-base md:text-lg tracking-tight text-slate-100 font-display">
                     Resourcely
                   </span>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">
+                  <span className="hidden sm:inline px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">
                     RevOps AI
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400 font-mono -mt-0.5">Sales Intelligence Engine</p>
+                <p className="hidden sm:block text-[11px] text-slate-400 font-mono -mt-0.5">Sales Intelligence Engine</p>
               </div>
             </div>
 
-            {/* Navigation Tabs */}
+            {/* Desktop Navigation Tabs */}
             <nav className="hidden md:flex items-center space-x-1 pl-4 border-l border-slate-800">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -103,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className={`flex items-center space-x-2 px-3.5 py-2 rounded-md text-sm font-medium transition-all ${
                       isActive
                         ? 'bg-slate-800 text-white shadow-sm border border-slate-700/60'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
                     }`}
                   >
                     <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-400' : 'text-slate-400'}`} />
@@ -123,11 +141,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right Action Tools */}
-          <div className="flex items-center space-x-3">
-            {/* System Test Suite Button */}
+          <div className="flex items-center space-x-1.5 sm:space-x-3">
+            {/* Desktop-only buttons */}
             <button
               onClick={onOpenTestSuiteModal}
-              className="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition"
+              className="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
               title="Run 8 System Verification Tests"
             >
               <TestTube2 className="w-3.5 h-3.5 text-cyan-400" />
@@ -135,23 +153,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="px-1 py-0.2 text-[9px] bg-cyan-950 text-cyan-300 rounded border border-cyan-800/60">8 tests</span>
             </button>
 
-            {/* ICP Config Button */}
             <button
               onClick={onOpenICPConfigModal}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition"
+              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
               title="Adjust ICP Weights & Thresholds"
             >
               <Sliders className="w-3.5 h-3.5 text-indigo-400" />
               <span className="hidden sm:inline">ICP Config</span>
             </button>
 
-            {/* Env Variables Button */}
             <button
               onClick={onOpenAskEnvModal || (() => onSelectTab('env'))}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition ${
+              className={`hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition ${
                 currentTab === 'env'
                   ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-700'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700'
               }`}
               title="Manage & Ask Environment Variables"
             >
@@ -159,28 +175,27 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="hidden sm:inline">Env Variables</span>
             </button>
 
-            {/* Import CSV Button */}
             {onOpenImportModal && (
               <button
                 onClick={onOpenImportModal}
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition"
+                className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
                 title="Import leads from CSV file"
               >
                 <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="hidden md:inline">Import CSV</span>
+                <span>Import CSV</span>
               </button>
             )}
 
-            {/* Quick Capture Button */}
+            {/* Add Lead - always visible */}
             <button
               onClick={onOpenNewLeadModal}
-              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/30 transition active:scale-95"
+              className="flex items-center space-x-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/30 transition active:scale-95"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Add Lead</span>
             </button>
 
-            {/* Notifications Dropdown */}
+            {/* Notifications */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifDropdown(!showNotifDropdown)}
@@ -210,15 +225,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </button>
                     )}
                   </div>
-                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-800/60 mt-1">
+                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-800 mt-1">
                     {notifications.length === 0 ? (
                       <div className="py-6 text-center text-xs text-slate-500">No recent alerts</div>
                     ) : (
-                      notifications.slice(0, 8).map((notif) => (
+                      notifications.slice(0, 8).map((notif: any) => (
                         <div
                           key={notif.id}
                           className={`p-3 text-xs transition ${
-                            notif.read ? 'text-slate-400' : 'bg-slate-800/40 text-slate-200'
+                            notif.read ? 'text-slate-400' : 'bg-slate-800 text-slate-200'
                           }`}
                         >
                           <div className="font-semibold text-slate-200 flex items-center justify-between">
@@ -238,11 +253,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {/* Active User Switcher */}
-            <div className="relative border-l border-slate-800 pl-3">
+            {/* User Switcher */}
+            <div className="relative border-l border-slate-800 pl-2 sm:pl-3">
               <button
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-                className="flex items-center space-x-2.5 px-2 py-1.5 rounded-md hover:bg-slate-800 text-left transition"
+                className="flex items-center space-x-2 px-1.5 sm:px-2 py-1.5 rounded-md hover:bg-slate-800 text-left transition"
               >
                 <img
                   src={currentUser.avatar}
@@ -257,7 +272,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {currentUser.role} • {currentUser.team}
                   </div>
                 </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-slate-400" />
               </button>
 
               {showUserDropdown && (
@@ -265,7 +280,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="px-3 py-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-800">
                     Switch Perspective
                   </div>
-                  {users.map((u) => (
+                  {users.map((u: User) => (
                     <button
                       key={u.id}
                       onClick={() => {
@@ -298,6 +313,66 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {showMobileMenu && (
+        <div className="md:hidden border-t border-slate-800 bg-slate-900 px-4 py-3 space-y-1">
+          {/* Nav Items */}
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
+                  isActive
+                    ? 'bg-slate-800 text-white border border-slate-700'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-400' : 'text-slate-500'}`} />
+                <span>{item.label}</span>
+                {item.badge && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-700 text-slate-300">
+                    {item.badge}
+                  </span>
+                )}
+                {item.pulse && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                )}
+              </button>
+            );
+          })}
+
+          {/* Mobile-only action buttons */}
+          <div className="border-t border-slate-800 pt-2 mt-2 space-y-1">
+            <button
+              onClick={() => { onOpenTestSuiteModal(); setShowMobileMenu(false); }}
+              className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            >
+              <TestTube2 className="w-4 h-4 text-cyan-400" />
+              <span>Test Suite</span>
+            </button>
+            <button
+              onClick={() => { onOpenICPConfigModal(); setShowMobileMenu(false); }}
+              className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            >
+              <Sliders className="w-4 h-4 text-indigo-400" />
+              <span>ICP Config</span>
+            </button>
+            {onOpenImportModal && (
+              <button
+                onClick={() => { onOpenImportModal(); setShowMobileMenu(false); }}
+                className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              >
+                <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                <span>Import CSV</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
